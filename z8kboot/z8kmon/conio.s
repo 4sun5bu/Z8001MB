@@ -3,6 +3,7 @@
 !  Subroutines for string output, input and convert
 !
 !  Copyright (c) 2019 4sun5bu
+!------------------------------------------------------------------------------
 
 	.global	puts, putln, putsp, puthex8, puthex16
 	.global	gets, skipsp, ishex, strhex8, strhex16

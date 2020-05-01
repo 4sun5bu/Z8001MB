@@ -3,9 +3,11 @@
 !  Misc routines for Z8001
 !
 !  Copyright (c) 2019 4sun5bu
+!------------------------------------------------------------------------------
 
 	.global	real_to_seg, seg_to_real, put_real_addr, str_to_addr
 	
+	sect	.text
 	segm
 
 !------------------------------------------------------------------------------

@@ -3,8 +3,11 @@
 !   Subroutines for HDD read and write
 !
 !  Copyright (c) 2019 4sun5bu
+!------------------------------------------------------------------------------
 
 	.global	ide_init, ide_read, ide_write
+
+	sect	.text
 	segm
 
 	.equ	IDE_DATAW, 0x0020	! Word access

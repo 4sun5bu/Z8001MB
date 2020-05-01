@@ -1,16 +1,18 @@
 !------------------------------------------------------------------------------
 ! z8530.s
-!      Serial Communication routines for Z8530 SCC
+!  Serial Communication routines for Z8530 SCC
 !
- 
+!  Copyright (c) 2019 4sun5bu
+!------------------------------------------------------------------------------
+
+	.global	initscc, putc, getc
+	
+	sect	.text
+	segm
+
 	.equ	SCCAC, 0x0005
 	.equ	SCCAD, 0x0007
 
-	.global	initscc, putc, getc
-
-	segm
-	sect	.text
-	
 !------------------------------------------------------------------------------
 ! initscc
 !   Initialize Z8530 SCC

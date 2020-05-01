@@ -24,10 +24,10 @@ z8kmon:
 
 .PHONY: write
 write:
-	/mnt/c/WinAVR-20100110/bin/avrdude.exe -c avrisp2 -P usb -p m164p -U flash:w:z8kbooter.hex:i -v
-#    avrdude -c avrisp2 -P usb -p m164p -U flash:w:z8kbooter.elf:e -v
+	#/mnt/c/WinAVR-20100110/bin/avrdude.exe -c avrisp2 -P usb -p m164p -U flash:w:z8kbooter.hex:i -v
+	avrdude -c avrisp2 -P usb -p m164p -U flash:w:z8kbooter.elf:e -v
 
 .PHONY: clean
 clean:
-	rm -f booter.o sio.o z8kbootimg.o z8kbooter.elf z8kmon.bin 
+	rm -f booter.o sio.o z8kbootimg.o z8kbooter.elf z8kmon.bin z8kbooter.hex
 	make -C z8kmon clean
