@@ -8,10 +8,11 @@
 ! * 820913 S. Savitzky (Zilog) -- created.
 ! * 840815 R. Weiser (DRI) -- conditional assembly
 ! *
-! * 
+! * 20200  4sun5bu -- modified for assembling with GNU as
+
 	.include "biosdef.s"
 
-    	sect .text
+	sect .text
 
 ! ****************************************************
 ! *
@@ -49,10 +50,10 @@
 ! *
 ! * _mem_cpy( source, dest, length)
 ! *	long source, dest, length;
-! * _map_adr( addr,  space)	  -> paddr
+! * _map_adr( addr,  space)	-> paddr
 ! *	long addr; int space;
 ! *
-! * _map_adr( addr,  -1)		  -> addr
+! * _map_adr( addr,  -1)	-> addr
 ! *	sets user seg# from addr
 ! *
 ! * _map_adr( addr,  -2)
@@ -105,7 +106,7 @@ mem_copy:
 	! rr4: dest
 	! rr2: length
 	ldirb	@r4, @r6, r3
-	ldl	rr6, rr4	! rr6 = dest + length
+	ldl	rr6, rr4		! rr6 = dest + length
 	ret
 
 mem_map:		
@@ -115,19 +116,19 @@ mem_map:
 	! r5:  space
 	! r2:  caller's FCW
 	NONSEG
-	cp 	r5, #-2             ! space=-2: xfer
+	cp 	r5, #-2			! space=-2: xfer
 	jp	eq, xfersc
 	ld	r4, scseg + 4(r15)
 	ld	r2, scfcw + 4(r15)
 	calr	map_1
-	ldl	cr6 + 4(r15), rr6   ! return rr6
+	ldl	cr6 + 4(r15), rr6	! return rr6
 	SEG
 	ret
 
 map_1:
 	! dispatch
 	cp	r5, #0xFFFF
-	jr	eq, set_usr	! space=-1: user seg
+	jr	eq, set_usr		! space=-1: user seg
 	cpb	rl5, #0
 	jr	eq, call_data
 	cpb	rl5, #1
@@ -140,9 +141,9 @@ map_1:
 	jr	eq, usr_data
 	cpb	rl5, #5
 	jr	eq, usr_prog
-	ret			! default: no mapping
+	ret				! default: no mapping
 
-set_usr:			! -1: set user seg.
+set_usr:				! -1: set user seg.
 	ld	_usrseg, r6
 	ret
 
@@ -165,10 +166,10 @@ call_data:
 	ret			! already mapped
 
 call_prog:
-	bit	r2, #15             ! segmented caller?
-	jr	nz, map_prog        ! yes-- use passed seg
-	ld	r6, r4              ! no -- use pc segment
-	jr	map_prog            ! map prog as data
+	bit	r2, #15		! segmented caller?
+	jr	nz, map_prog	! yes-- use passed seg
+	ld	r6, r4		! no -- use pc segment
+	jr	map_prog	! map prog as data
 
 sys_data:
 	ld	r6, _sysseg
@@ -196,9 +197,9 @@ usr_prog:
 map_prog:
 	! map program addr into data
 	! rr6 = address
-	testb   rh5                 ! data access?
-	ret     nz                  ! no: done
-	and     r6, #0x7F00         ! extract seg bits
+	testb   rh5		! data access?
+	ret     nz		! no: done
+	and     r6, #0x7F00	! extract seg bits
 
 	! olivetti:  segment 8 is the only one with
 	!	     separate I and D spaces, and

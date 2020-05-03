@@ -39,7 +39,7 @@ $ cp libcpm.a xxx/cpm8k/
 
 Third step is building CP/M.  
 In the cpm8k directory    
-```Shell
+```
 $ cd yyy/cpm8k
 $ make
 ```
