@@ -58,14 +58,6 @@
 	.equ	SYSTEM, 0x03000000		! system address
 	.equ	SYSSTK, (SYSTEM + 0x0BFFE)	! system stack top
 
-!    .equ    BPT, 16                     ! blocks in a track
-!    .equ    BPS, 256                    ! bytes in a sector
-!    .equ    NBLKS, 9*16                 ! blocks in boot
-!    .equ    HDRSIZE, 24		            ! bytes in header
-!    .equ    FILSIZE, 256 * (NBLKS - 1)  ! file data size
-!    .equ    SYSSIZE, FILSIZE - HDRSIZE  ! total system size
-!    .equ    S1SIZE, BPS - HDRSIZE       ! data in sector 1
-
 ! ****************************************************
 ! *
 ! * Entry Points and post-boot Initialization

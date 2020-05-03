@@ -65,17 +65,17 @@ func22:
 	ret
 
 !------------------------------------------------------------------------------
-        sect .data
-        even
+		sect .data
+		even
 
 memtbl:
-        .word   0x04
-        .long   0x01000000      ! Region 1
-        .long   0x00010000
-        .long   0x01000000      ! Region 2
-        .long   0x00000000
-        .long   0x01000000      ! Region 3
-        .long   0x00000000
-        .long   0x01000000      ! Region 4
-        .long   0x00000000
-        
+	.word	0x04
+	.long	0x01000000		! Region 1
+	.long	0x00010000
+	.long	0x01000000		! Region 2
+	.long	0x00000000
+	.long	0x01000000		! Region 3
+	.long	0x00000000
+	.long	0x01000000		! Region 4
+	.long	0x00000000
+	
