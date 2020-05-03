@@ -1,6 +1,8 @@
 # CP/M-8000
 
-This directory includes CP/M-8000 BIOS source codes for my Z8001 board. You can build your own CP/M-8000 system by cross assembling these codes on Linux and maybe on Windows. 
+![CPM8k](./cpm8k-1.png)
+
+This directory includes CP/M-8000 BIOS source codes for my Z8001 board. You can build your own CP/M-8000 system by cross assembling these codes on Linux and Windows. 
 It doesn't support memory management that many commands need, so things you can do on this is very limited.
 
 ## Preparation
@@ -10,10 +12,10 @@ It doesn't support memory management that many commands need, so things you can 
  BDOS and CPP are provided in XOUT format which is a relocatable format for CP/M-8000. XOUT files cannot be linked with GNU linker, so format converting is necessary.   
  The xout2coff is a converter from XOUT format to COFF format, and the xarch is a tool to unpack XOUT library. These are included in **xoututils** in my GitHub repository. 
 * **CP/M-8000**\
-Download from [The Unoffcial CP/M Web site](http://www.cpm.z80.de/), you can find the source code **CP/M-8000 1.1** in [Digital Research Source Code](http://www.cpm.z80.de/source.html).  
+Download from [The Unofficial CP/M Web site](http://www.cpm.z80.de/), you can find the source code **CP/M-8000 1.1** in [Digital Research Source Code](http://www.cpm.z80.de/source.html).  
 
 ## How to build
-First Step is converting cpmsys.rel.  
+First Step is converting **cpmsys.rel**.  
 In the download directory, 
 ```
 $ unzip cpm8k11.zip
@@ -23,7 +25,7 @@ $ xout2conf cpmsys.rel
 ```
 **"xxx"** is a working directory where you stored cpm8k. 
 
-Second step is converting libcpm.a. In the xarch directory there is **convxlib.sh** which converts XOUT library.     
+Second step is converting **libcpm.a**. In the xarch directory there is **convxlib.sh** which converts XOUT library.     
  In the download directory, 
 ```
 $ mkdir libcpm
@@ -41,11 +43,11 @@ In the cpm8k directory
 $ cd yyy/cpm8k
 $ make
 ```
-If you want to make CP/M disk image, 
+If you want to make CP/M disk image and write it on a disk drive, 
 ```
 $ make diskimg
 $ sudo dd if=cpm8k.bin of=/dev/sdx 
 ``` 
-**"sdx"** is your device to write the disk image.  
-To make disk image you need to install cpmtools and modify **/etc/cpmtools/diskdefs**. Sample disk definition is in the cpm8k directory. 
+**"sdx"** is your drive to write the disk image.  
+To make CP/M disk image you need to install cpmtools and modify **/etc/cpmtools/diskdefs**. Sample disk definition is in the cpm8k directory. 
 Be careful with executing **dd**. Do not set a wrong disk drive for **"of"**.    
