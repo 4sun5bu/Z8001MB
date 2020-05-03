@@ -2,5 +2,9 @@
     "editor.insertSpaces": false,
     "editor.tabSize": 8,
     "editor.renderControlCharacters": true,
-    "editor.fontSize": 16
+    "editor.fontSize": 16,
+    "cSpell.words": [
+        "cp",
+        "m"
+    ]
 }

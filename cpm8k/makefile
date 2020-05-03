@@ -21,6 +21,10 @@ cpm8k.bin: $(objs) biosdef.s cpmsys.o libcpm.a cpmsys.x
 .s.o:
 	$(AS) -z8002 -o $@ $< 
 
+.PHONY: dskimg
+dskimg:
+	mkfs.cpm -f cpm8k -b cpm8k.bin disk.img 
+
 .PHONY: clean
 clean:
 	$(RM) -f cpm8k cpm8k.bin cpm8k.hex $(objs)
