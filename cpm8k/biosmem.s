@@ -8,7 +8,7 @@
 ! * 820913 S. Savitzky (Zilog) -- created.
 ! * 840815 R. Weiser (DRI) -- conditional assembly
 ! *
-! * 20200  4sun5bu -- modified for assembling with GNU as
+! * 2020  4sun5bu -- modified for assembling with GNU as
 
 	.include "biosdef.s"
 
@@ -201,12 +201,13 @@ map_prog:
 	ret     nz		! no: done
 	and     r6, #0x7F00	! extract seg bits
 
-	! olivetti:  segment 8 is the only one with
+	! Z8001MB:   segment 8 is the only one with
 	!	     separate I and D spaces, and
-	!	     the program space is accessed
+	!	     the I space is accessed
 	!	     as segment 10's data.
-
-	!cpb     rh6, #8
-	!ret     ne
-	!ldb     rh6, #10
+	.if  ID_SPLIT == 1 
+	cpb     rh6, #8
+	ret     ne
+	ldb     rh6, #10
+	.endif
 	ret

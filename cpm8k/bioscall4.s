@@ -8,6 +8,8 @@
 	
 	.global	func15, func17, func18, func19, func20, func22
 	
+	.include "biosdef.s"
+
 	unsegm
 	sect .text
 
@@ -67,15 +69,29 @@ func22:
 !------------------------------------------------------------------------------
 		sect .data
 		even
-
+	
 memtbl:
+	.if ID_SPLIT == 1
+	.word	0x05
+	.long	0x0A000000		! Region 1
+	.long	0x00010000
+	.long	0x08000000		! Region 2
+	.long	0x00010000
+	.long	0x08000000		! Region 3
+	.long	0x00010000
+	.long	0x0B000000		! Region 4
+	.long	0x00010000
+	.long	0x09000000		! for DDT?
+	.long	0x00010000	
+	
+	.else
 	.word	0x04
 	.long	0x01000000		! Region 1
 	.long	0x00010000
-	.long	0x01000000		! Region 2
+	.long	0x00000000		! Region 2
 	.long	0x00000000
-	.long	0x01000000		! Region 3
+	.long	0x00000000		! Region 3
 	.long	0x00000000
 	.long	0x01000000		! Region 4
-	.long	0x00000000
-	
+	.long	0x00010000
+	.endif
