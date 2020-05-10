@@ -1,0 +1,31 @@
+Name     Z8KMMAP ;
+PartNo   00 ;
+Date     2020/05/05 ;
+Revision 01 ;
+Designer 4sun5bu ;
+Company  4sun5bu ;
+Assembly None ;
+Location Tokyo ;
+Device   f1502ispplcc44 ;
+
+/* *************** INPUT PINS *********************/
+PIN [4,5,6,8] = [LS0..LS3];                                  
+PIN [9,11] = [ST2, ST3]; 
+/* *************** OUTPUT PINS *********************/
+PIN  [24..27] = [PS0..PS3]; /*                                 */ 
+
+LS4 = ST3 & !ST2;	/* Data/Stack Request */
+
+FIELD input = [LS4..LS0];
+FIELD output = [PS3..PS0]; 
+TABLE input => output {
+	 0 =>  0;  1 =>  1;  2 =>  2;  3 =>  3;	/* not Data request */
+	 4 =>  0;  5 =>  1;  6 =>  2;  7 =>  3;
+	 8 =>  1;  9 =>  0;  a =>  1;  b =>  1; 
+	 c =>  0;  d =>  1;  e =>  2;  f =>  3;
+
+	10 =>  0; 11 =>  1; 12 =>  2; 13 =>  3; 	/* Data request */
+	14 =>  0; 15 =>  1; 16 =>  2; 17 =>  3;
+	18 =>  2; 19 =>  0; 1a =>  1; 1b =>  1; 
+	1c =>  0; 1d =>  1; 1e =>  2; 1f =>  3;
+}  
