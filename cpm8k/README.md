@@ -52,5 +52,5 @@ To make CP/M disk image you need to install cpmtools and modify **/etc/cpmtools/
 Be careful with executing **dd**. Do not set a wrong disk drive for **"of"**.    
 
 ## License
-cpmsys.rel, cpmsys.o and libcpm.a - licensed by Lineo,Inc. See "The Unofficial CP/M Web Site"
+cpmsys.rel, cpmsys.o and libcpm.a - licensed by Lineo,Inc. See "The Unofficial CP/M Web Site"   
 others - MIT License
