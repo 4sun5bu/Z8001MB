@@ -50,3 +50,7 @@ $ sudo dd if=cpm8k.bin of=/dev/sdx
 **"sdx"** is your drive to write the disk image.  
 To make CP/M disk image you need to install cpmtools and modify **/etc/cpmtools/diskdefs**. Sample disk definition is in the cpm8k directory. 
 Be careful with executing **dd**. Do not set a wrong disk drive for **"of"**.    
+
+## License
+cpmsys.rel, cpmsys.o and libcpm.a - licensed by Lineo,Inc. See "The Unofficial CP/M Web Site"   
+others - MIT License
