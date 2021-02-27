@@ -1,6 +1,6 @@
 # Z8001MB - Building CP/M-8000 machine Project 
 **Zilog Z8001 Microprocessor Board and CP/M-8000 porting**    
-This board is designed to run CP/M-8000 which provided by Digital Research released in 1984. It runs at 6MHz clock speed, and has 256k bytes SRAM, two serial ports, and one 8 bit IDE interface. 
+This board is designed to run CP/M-8000 which released by Digital Research in 1984. It runs at 6MHz clock speed, and has 256k bytes SRAM, two serial ports, and one 8 bit IDE interface. 
 
 ## Schematic
 **Circuit diagram of the Z8001MB**    
