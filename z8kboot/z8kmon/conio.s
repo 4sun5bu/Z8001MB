@@ -15,54 +15,52 @@
 ! putln 
 !   Send CR and LF
 !
-!   destroyed:  rl0, r1, rl4 
+!   destroyed:  r0, r1 
 
 putln:
-	ldb	rl4, #'\r'
+	ldb	rl0, #'\r'
 	call	putc
-	ldb	rl4, #'\n'
+	ldb	rl0, #'\n'
 	jp	putc
 
 !------------------------------------------------------------------------------
 ! putsp 
-!   Send ' '
+!   Send SPACE
 !
-!   destroyed:  rl0, r1, rl4 
+!   destroyed:  r0, r1
 
 putsp:
-	ldb	rl4, #' '
+	ldb	rl0, #' '
 	jp	putc
 
 !------------------------------------------------------------------------------
 ! puts
 !   Print a zero terminated string 
 !
-!   input:      rr4 --- start address of the string
-!   destroyed:  r2, rr4, rr8               
+!   input:      rr4 --- string address
+!   destroyed:  r0, rr4
 
 puts:
-	ldl	rr8, rr4
-1:
-	ldb	rl4, @rr8
-	orb	rl4, rl4
+	ldb	rl0, @rr4
+	testb	rl0
 	ret	z
 	call	putc
-	inc	r9, #1
-	jr	1b
+	inc	r5, #1
+	jr	puts
 
 !------------------------------------------------------------------------------
 ! puthex4
 !   Print a lower 4bit value in hex
 !
-!   input:      rl4 --- value
+!   input:      rl0 --- value
 !   destroyed:  r0, r1, rl4
 
 puthex4:
-	andb	rl4, #0x0f
-	addb	rl4, #'0'
-	cpb	rl4, #('0' + 10)
+	andb	rl0, #0x0f
+	addb	rl0, #'0'
+	cpb	rl0, #('0' + 10)
 	jr	lt, putc
-	addb	rl4, #('A' - '0' - 10)
+	addb	rl0, #('A' - '0' - 10)
 	jr	putc
 
 !------------------------------------------------------------------------------
@@ -73,10 +71,10 @@ puthex4:
 !   destroyed:  r0, r1, r4
 
 puthex8:
-	ldb	rh4, rl4 
-	srlb	rl4, #4
+	ldb	rl0, rl4 
+	srlb	rl0, #4
 	call	puthex4
-	ldb	rl4, rh4
+	ldb	rl0, rl4
 	jr	puthex4 
 
 !------------------------------------------------------------------------------
@@ -99,24 +97,23 @@ puthex16:
 !
 !   input:      rr4 --- buffer address
 !   return:     rr4 --- read string terminated by zero
-!   destroyed:  r0, r1, rr4, rr8
+!   destroyed:  r0, r1
 
 gets:
 	pushl	@rr14, rr4
-	ldl	rr8, rr4 
 1:
 	call	getc
-	cpb	rl4, #'\n'
+	cpb	rl0, #'\n'
 	jr	eq, 1b
-	cpb	rl4, #'\r'
+	cpb	rl0, #'\r'
 	jr	eq, 2f
 	call	putc
-	ldb	@rr8, rl4
-	inc	r9, #1
+	ldb	@rr4, rl0
+	inc	r5, #1
 	jr	1b
 2:  
 	call	putln
-	ldb	@rr8, #0
+	ldb	@rr4, #0
 	popl	rr4, @rr14
 	ret
 
@@ -137,33 +134,33 @@ skipsp:
 
 !------------------------------------------------------------------------------
 ! ishex
-!   Convert ascii to hex4
+!   Check and convert an ascii code to 4-bit hex value
 !
-!   input:      rl4 --- ascii character   
-!   return:     rl4 --- 0x00 - 0x0f 
+!   input:      rl0 --- ascii character   
+!   return:     rl0 --- 0x00 - 0x0f 
 !               CF  --- error 
 !   destroyed:  
 
 ishex:
-	cpb	rl4, #'0'
+	cpb	rl0, #'0'
 	jr	lt, 3f
-	cpb	rl4, #'9'
+	cpb	rl0, #'9'
 	jr	gt, 1f
-	subb	rl4, #'0' 
+	subb	rl0, #'0' 
 	ret
 1:
-	cpb	rl4, #'A'
+	cpb	rl0, #'A'
 	jr	lt, 3f
-	cpb	rl4, #'F'
+	cpb	rl0, #'F'
 	jr	gt, 2f
-	subb	rl4, #('A' - 0x0a) 
+	subb	rl0, #('A' - 0x0a) 
 	ret
 2:
-	cpb	rl4, #'a'
+	cpb	rl0, #'a'
 	jr	lt, 3f
-	cpb	rl4, #'f'
+	cpb	rl0, #'f'
 	jr	gt, 3f
-	subb	rl4, #('a' - 0x0a) 
+	subb	rl0, #('a' - 0x0a) 
 	ret
 3:  
 	setflg	c 
@@ -177,25 +174,21 @@ ishex:
 !   return:     rl0 --- value
 !               CF  --- error 
 !               rr4 --- next address 
-!   destroyed:  rr6
+!   destroyed:  rh0
 
 strhex8:
-	ldl	rr6, rr4
-	xorb	rl0, rl0
-1:
-	ldb	rl4, @rr6
+	ldb	rl0, @rr4
 	call	ishex
 	ret	c
-	ldb	rl0, rl4
-	inc	r7, #1
-	ldb	rl4, @rr6 
+	ldb	rh0, rl0
+	inc	r5, #1
+	ldb	rl0, @rr4 
 	call	ishex
 	ret	c
-	rlb	rl0, #2
-	rlb	rl0, #2
-	addb	rl0, rl4
-	inc	r7, #1
-	ldl	rr4, rr6
+	rlb	rh0, #2
+	rlb	rh0, #2
+	addb	rl0, rh0
+	inc	r5, #1
 	ret
 
 !------------------------------------------------------------------------------
@@ -203,14 +196,15 @@ strhex8:
 !   Convert string to 16bit hex
 !
 !   input:      rr4 --- string address   
-!   return:     CF  --- error 
-!               r0  --- value
+!   return:     r0  --- value
+!               CF  --- error 
 !               rr4 --- next address 
-!   destroyed:  rr6
+!   destroyed:  r1
 
 strhex16:
-	xor	r0, r0
 	call	strhex8
+	ldb	rl1, rl0
 	ret	c
-	ldb	rh0, rl0
-	jr	strhex8
+	call	strhex8
+	ldb	rh0, rl1
+	ret

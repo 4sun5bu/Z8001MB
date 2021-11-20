@@ -5,7 +5,7 @@
 !  Copyright (c) 2019 4sun5bu
 !------------------------------------------------------------------------------
 
-	.global	set_cmnd 
+	.global	set_cmnd, scmnd_usage 
 
 	sect	.text
 	segm
@@ -21,12 +21,12 @@ set_cmnd:
 	testb	@rr4
 	jr	z, repeat	! without address, start from wo_addr
 	call	str_to_addr	! get address and set to wo_addr
-	ret	c
+	jr	c, scmnd_usage
 	ldl	setaddr, rr0
 repeat:
 	ldl	rr4, setaddr    
 	call	put_real_addr
-	ldb	rl4, #':'
+	ldb	rl0, #':'
 	call	putc
 	ldl	rr4, setaddr
 	call	real_to_seg
@@ -57,4 +57,13 @@ prev:
 	subl	rr0, #1
 	jr	1b
 
- 
+scmnd_usage:
+	lda	rr4, usage
+	jp	puts
+
+!------------------------------------------------------------------------------
+	sect	.rodata
+usage:
+	.asciz 	"Set\t: s [xxxxxx]\r\n"
+
+

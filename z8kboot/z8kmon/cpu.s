@@ -23,7 +23,7 @@ real_to_seg:
 	ret
 
 !------------------------------------------------------------------------------
-! seg_to_sreal
+! seg_to_real
 !   Convert segmented address to real address
 !
 !   input:  rr4 --- segmented address
@@ -64,23 +64,24 @@ str_to_addr:
 	ldl	rr6, rr4 
 	clr	r0
 	ld	r1, r0
-	ld	r4, r0
-	ld	r5, r0
-	ldb	rl4, @rr6 
+	ld	r2, r0
+	ld	r3, r0
+	ldb	rl0, @rr6 
 	call	ishex
-	ldb	rl1, rl4
+	ldb	rl3, rl0
 	jr	c, 3f		! The first charactor is not hex number
 1:
 	inc	r7, #1
-	ldb	rl4, @rr6
+	ldb	rl0, @rr6
 	call	ishex
 	jr	c, 2f 
-	slll	rr0, #4		! 4 bit shift left 
-	add	r1, r4		
-	adc	r0, r5		! shift the carry flag to r0 
+	slll	rr2, #4		! 4 bit shift left 
+	add	r3, r0		
+	adc	r2, r1		! shift the carry flag to r0 
 	jr	1b
 2:
-	resflg	c	! reset carry flag
+	ldl	rr0, rr2
+	resflg	c		! reset carry flag
 3:
 	ldl	rr4, rr6
 	ret

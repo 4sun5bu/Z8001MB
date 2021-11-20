@@ -5,7 +5,7 @@
 !  Copyright (c) 2019 4sun5bu
 !------------------------------------------------------------------------------
 
-	.global dump_cmnd 
+	.global dump_cmnd, dcmnd_usage 
 
 	sect	.text
 	segm
@@ -21,15 +21,16 @@ dump_cmnd:
 	testb	@rr4
 	jr	z, 2f			! EOL
 	call	str_to_addr
-	ret	c			! illegal start address
+	jr	c, dcmnd_usage		! illegal start address
 	ldl	dumpaddr, rr0
 	call	skipsp			! end address    
 	testb	@rr4
 	jr	z, 2f			! only start address
 	call	str_to_addr
+	jr	c, dcmnd_usage		! illegal end address
 	ldl	rr6, rr0
 	ldl	rr4, dumpaddr
-	jr	3f			! illegal end address, but allowed
+	jr	3f			
 2:
 	ldl	rr4, dumpaddr
 	clr	r6
@@ -41,6 +42,10 @@ dump_cmnd:
 	ldl	dumpaddr, rr6
 	call	putln
 	ret
+
+dcmnd_usage:
+	lda	rr4, usage
+	jp	puts
 
 !------------------------------------------------------------------------------
 ! dump
@@ -77,12 +82,12 @@ dump:
 line_dump:
 	ldl	rr12, rr4
 	call	put_real_addr
-	ldb	rl4, #':'
+	ldb	rl0, #':'
 	call	putc
 	call	putsp
 	ldl	rr4, rr12
 	call	hex_dump
-	ldb	rl4, #':'
+	ldb	rl0, #':'
 	call	putc
 	call	putsp
 	ldl	rr4, rr12
@@ -120,15 +125,15 @@ ascii_dump:
 	ldl	rr4, rr8
 	call	real_to_seg
 	ldl	rr10, rr4
-	ldb	rl4, @rr10
-	cpb	rl4, #' '
+	ldb	rl0, @rr10
+	cpb	rl0, #' '
 	jr	ge, 2f
-	ldb	rl4, #'.'
+	ldb	rl0, #'.'
 	jr	3f
 2:
-	cpb	rl4, #'~'
+	cpb	rl0, #'~'
 	jr	le, 3f
-	ldb	rl4, #'.'
+	ldb	rl0, #'.'
 3:
 	call	putc
 	addl	rr8, #1
@@ -143,3 +148,6 @@ ascii_dump:
 header:
 	.asciz	"Address +0 +1 +2 +3 +4 +5 +6 +7 +8 +9 +A +B +C +D +E +F\r\n" 
 	
+usage:
+	.asciz	"Dump\t: d [xxxxxx] [yyyyyy]\r\n"
+

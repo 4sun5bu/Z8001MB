@@ -33,7 +33,7 @@
 	ldl	setaddr, rr0
 	ldl	goaddr, rr0
 1:
-	ldb	rl4, #'$'
+	ldb	rl0, #'>'
 	call	putc
 	call	putsp
 	lda	rr4, linebuff
@@ -72,8 +72,21 @@
 	jr	1b
 7:
 	cpb	rh0, #'z'
-	jr	ne, err_cmnd
+	jr	ne, 8f
 	call	z_cmnd
+
+8:
+	cpb	rh0, #'h'
+	jr	ne, err_cmnd
+	call	dcmnd_usage
+	call	scmnd_usage
+	call	gcmnd_usage
+	call	lcmnd_usage
+	call	icmnd_usage
+	call	ocmnd_usage
+	call	zcmnd_usage
+	jr	1b
+
 err_cmnd:
 	testb	linebuff
 	jr	z, 1b

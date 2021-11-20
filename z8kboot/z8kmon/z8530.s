@@ -1,6 +1,6 @@
 !------------------------------------------------------------------------------
 ! z8530.s
-!  Serial Communication routines for Z8530 SCC
+!  Serial I/O routines for Z8530 SCC
 !
 !  Copyright (c) 2019 4sun5bu
 !------------------------------------------------------------------------------
@@ -28,37 +28,36 @@ initscc:
 
 !------------------------------------------------------------------------------
 ! putc 
-!   print 1 byte 
+!   output 1 byte to the PORT A 
 !
-!   input:      rl4 --- Ascii code
-!   destroyed:  rl0, r1 
+!   input:      rl0 --- Ascii code
+!   destroyed:  r0, r1 
 
 putc:
 	ld	r1, #SCCAC
 1:
-	inb	rl0, @r1
-	andb	rl0, #0x04
+	inb	rh0, @r1
+	andb	rh0, #0x04
 	jr	z, 1b 
 	ld	r1, #SCCAD
-	outb	@r1, rl4
+	outb	@r1, rl0
 	ret
 
 !------------------------------------------------------------------------------
 ! getc
-!   input 1 byte from serial port
+!   input 1 byte from the PORT A
 !
-!   return:     rl4 --- read data
+!   return:     rl0 --- read data
 !   destroyed:  r0, r1
 
 getc:
 	ld	r1, #SCCAC
  1:  
-	mres
-	inb	rl0, @r1
-	andb	rl0, #0x01
+	inb	rh0, @r1
+	andb	rh0, #0x01
 	jr	z, 1b 
 	ld	r1, #SCCAD
-	inb	rl4, @r1
+	inb	rl0, @r1
 	ret
 
 !------------------------------------------------------------------------------

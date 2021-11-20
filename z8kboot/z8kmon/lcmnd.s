@@ -5,7 +5,7 @@
 !  Copyright (c) 2019 4sun5bu
 !------------------------------------------------------------------------------
 
-	.global	load_cmnd 
+	.global	load_cmnd, lcmnd_usage 
 
 	sect	.text
 	segm
@@ -136,6 +136,15 @@ ext_saddr:
 no_err:
 	ldb	rl0, #0x01
 	ret 
+
+lcmnd_usage:
+	lda	rr4, usage
+	jp	puts
+
+!------------------------------------------------------------------------------
+	sect	.rodata
+usage:
+	.asciz	"Load HEX: l (no options)\r\n"
 
 !------------------------------------------------------------------------------
 	sect	.bss

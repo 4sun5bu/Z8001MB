@@ -5,7 +5,7 @@
 !  Copyright (c) 2019 4sun5bu
 !------------------------------------------------------------------------------
 
-	.global	go_cmnd 
+	.global	go_cmnd, gcmnd_usage 
 
 	sect	.text
 	segm
@@ -21,10 +21,20 @@ go_cmnd:
 	testb	@rr4
 	jr	z, 1f			! EOL, without address
 	call	str_to_addr
-	ret	c
+	jr	c, gcmnd_usage
 	ldl	goaddr, rr0
 1:
 	ldl	rr4, goaddr
 	call	real_to_seg
 	call	@rr4
 	ret
+
+gcmnd_usage:
+	lda	rr4, usage
+	jp	puts
+
+!------------------------------------------------------------------------------
+	sect	.rodata
+usage:
+	.asciz 	"Go\t: g [xxxxxx]\r\n"
+

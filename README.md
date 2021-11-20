@@ -15,6 +15,6 @@ The machine code monitor is written in assembly language which can be assembled 
 
 ## cpm8k
 **CP/M-8000 BIOS for Z8001MB**    
-The original CP/M-8000 BIOS was written in C language. But it makes hard to implement BIOS for other machines without running CP/M-8000. So, I wrote a BIOS with GNU assembler under Linux, converted the CP/M-8000 body and libraries to COFF object format, and linked them with GNU linker. 
+The original CP/M-8000 BIOS was written in C language. But it makes hard to implement BIOS on other machines without running CP/M-8000. So, I wrote a BIOS with GNU assembler under Linux, converted the CP/M-8000 body and libraries to COFF object format, and linked them with GNU linker. 
 
 ![cpm8k](./cpm8k/cpm8k-1.png)
