@@ -59,9 +59,9 @@ puthex4:
 	andb	rl0, #0x0f
 	addb	rl0, #'0'
 	cpb	rl0, #('0' + 10)
-	jr	lt, putc
+	jp	lt, putc
 	addb	rl0, #('A' - '0' - 10)
-	jr	putc
+	jp	putc
 
 !------------------------------------------------------------------------------
 ! puthex8
@@ -96,24 +96,41 @@ puthex16:
 !   Input 1 line 
 !
 !   input:      rr4 --- buffer address
-!   return:     rr4 --- read string terminated by zero
+!   return:     rr4 --- address of zero terminated string
 !   destroyed:  r0, r1
 
 gets:
 	pushl	@rr14, rr4
+	push	@rr14, r2
+	clr	r2
 1:
 	call	getc
-	cpb	rl0, #'\n'
-	jr	eq, 1b
+	cpb	rl0, #'\b'
+	jr	nz, 2f
+	test	r2
+	jr	z, 1b
+	call	putc
+	ldb	rl0, #' '
+	call	putc
+	ldb	rl0, #'\b'
+	call	putc
+	dec	r5, #1
+	dec	r2, #1
+	jr	1b
+2:
 	cpb	rl0, #'\r'
-	jr	eq, 2f
+	jr	eq, 3f
+	cpb	rl0, #'\n'
+	jr	eq, 3f
 	call	putc
 	ldb	@rr4, rl0
 	inc	r5, #1
+	inc	r2, #1
 	jr	1b
-2:  
+3:  
 	call	putln
 	ldb	@rr4, #0
+	pop	r2, @rr14
 	popl	rr4, @rr14
 	ret
 
