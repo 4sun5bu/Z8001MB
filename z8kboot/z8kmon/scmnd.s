@@ -18,44 +18,48 @@
 !   destroyed:  r0, r1, r2, r3, rr4, rr6, rr8, rr10
 
 set_cmnd:
+	ldl	rr10, setaddr
 	testb	@rr4
-	jr	z, repeat	! without address, start from wo_addr
-	call	str_to_addr	! get address and set to wo_addr
+	jr	z, repeat	! without address
+	call	str_to_addr
 	jr	c, scmnd_usage
 	ldl	setaddr, rr0
+	ldl	rr10, rr0
 repeat:
-	ldl	rr4, setaddr    
+	ldl	rr4, rr10    
 	call	put_real_addr
 	ldb	rl0, #':'
 	call	putc
-	ldl	rr4, setaddr
+	ldl	rr4, rr10
 	call	real_to_seg
-	ldl	rr10, rr4	! rr10 - write addres in segmented address
-	ldb	rl4, @rr10
+	ldl	rr6, rr4	! rr6 - write addres in segmented address
+	ldb	rl4, @rr6
 	call	puthex8
 	call	putsp
 	lda	rr4, linebuff
 	call	gets
 	call	skipsp
-	orb	rl0, rl0
-	jr	z, next
-	cpb	rl0, #'-'	! decrement address
-	jr	eq, prev
-	cpb	rl0, #'!'	! break
-	ret	eq
-	call	strhex8
-	ret	c		! illegal value
-	ldb	@rr10, rl0
-next:   
-	ldl	rr0, setaddr
-	addl	rr0, #1
-1:
-	ldl	setaddr, rr0
+	testb	rl0
+	jr	nz, repeat2
+	addl	rr10, #1
 	jr	repeat
-prev:
-	ldl	rr0, setaddr
-	subl	rr0, #1
-	jr	1b
+repeat2:	
+	pushl	@rr14, rr4
+	ldl	rr4, rr10
+	call	real_to_seg
+	ldl	rr6, rr4
+	popl	rr4, @rr14
+	call	strhex8
+	jr	nc, 1f		! illegal value
+	ldl	setaddr, rr10
+	ret
+1:
+	ldb	@rr6, rl0
+	addl	rr10, #1
+	call	skipsp
+	testb	rl0
+	jr	nz, repeat2
+	jr	repeat
 
 scmnd_usage:
 	lda	rr4, usage
