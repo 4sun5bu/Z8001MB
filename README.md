@@ -10,8 +10,8 @@ Three PDFs shows circuit diagrams of CPU, memory and peripherals. This board has
 
 ## z8kboot
 **Boot program and machine code monitor for Z8001**
-The boot program runs on ATMEGA165P after resetting, and transfers a machine code monitor on the SRAM.
-The machine code monitor is written in assembly language which can be assembled with GNU assembler.
+The boot program runs on ATMEGA165P after resetting, and transfers a machine code monitor to the SRAM.
+The machine code monitor is written in assembly language, GNU AS.
 
 ## cpm8k
 **CP/M-8000 BIOS for Z8001MB**    

@@ -1,7 +1,7 @@
 # Z8kBoot
 
 ## About Z8kboot and Z8kmon
-* Z8kboot is a booter program running on the ATMEGA164P micro controller. It copies Z8kMon binary to the Z8001 SRAM, and jumps to it.  
+* Z8kboot is a booter program running on the ATMEGA164P micro controller. It copies Z8kMon binary to the Z8001 SRAM, and run it.  
 * Z8kmon is a simple machine code monitor for Zilog Z8001 CPU running in segmeted mode. It has basic monitor commands such as Dump memory, Set data, Load HEX file, etc. It can also boot a program from the 1st resion of IDE drive.  
 
 ## LICENSE
