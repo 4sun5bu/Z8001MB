@@ -6,7 +6,7 @@
 !------------------------------------------------------------------------------
 
 	.global	real_to_seg, seg_to_real, put_real_addr, str_to_addr
-	
+	.global put_seg_addr, put_saddr, str_to_saddr	
 	sect	.text
 	segm
 
@@ -51,6 +51,23 @@ put_real_addr:
 	ret
 
 !------------------------------------------------------------------------------
+! put_seg_addr
+!   Print a segmented address in hex 
+!
+!   input:      rr4 --- real address
+!   destroyed:  r0, r1, r2, rr4, rr6
+
+put_seg_addr:
+	ldl	rr6, rr4     
+	ldb	rl4, rl6
+	call	puthex8
+	ldb	rl0, #':'
+	call	putc
+	ld	r4, r7
+	call	puthex16
+	ret
+
+!------------------------------------------------------------------------------
 ! str_to_addr
 !   Convert string to 24bit real address
 !
@@ -85,4 +102,47 @@ str_to_addr:
 3:
 	ldl	rr4, rr6
 	ret
-    
+!------------------------------------------------------------------------------
+! str_to_saddr
+!   Convert string to 24bit real address
+!
+!   input:      rr4 --- string address   
+!   return:     CF  --- Error     
+!               rr0 --- segmented address
+!               rr4 --- next address                      
+!   destroyed:  r2 
+
+str_to_saddr:
+	call	strhex8
+	ret	c
+	ldb	rh2, rl0
+	orb	rh2, #0x80
+	clrb	rl2
+	cpb	@rr4, #':'
+	jr	ne, 1f
+	inc	r5, #1
+1:
+	call	strhex16
+	ret	c
+	ld	r1, r0
+	ld	r0, r2
+	ret
+
+!------------------------------------------------------------------------------
+! put_saddr
+!   Print a segmented address in hex 
+!
+!   input:      rr4 --- segmented address
+!   destroyed:  r0, r1, rr2, rr4
+
+put_saddr:
+	ldl	rr2, rr4     
+	ldb	rl4, rh2
+	andb	rl4, #0x7f
+	call	puthex8
+	ldb	rl0, #':'
+	call	putc
+	ld	r4, r3
+	call	puthex16
+	ret
+

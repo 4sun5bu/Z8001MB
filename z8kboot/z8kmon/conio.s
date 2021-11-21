@@ -15,7 +15,7 @@
 ! putln 
 !   Send CR and LF
 !
-!   destroyed:  r0, r1 
+!   destroyed:  r0 
 
 putln:
 	ldb	rl0, #'\r'
@@ -27,7 +27,7 @@ putln:
 ! putsp 
 !   Send SPACE
 !
-!   destroyed:  r0, r1
+!   destroyed:  r0
 
 putsp:
 	ldb	rl0, #' '
@@ -53,7 +53,7 @@ puts:
 !   Print a lower 4bit value in hex
 !
 !   input:      rl0 --- value
-!   destroyed:  r0, r1, rl4
+!   destroyed:  r0
 
 puthex4:
 	andb	rl0, #0x0f
@@ -68,7 +68,7 @@ puthex4:
 !   Print a 8bit value in hex 
 !
 !   input:      rl4 --- value
-!   destroyed:  r0, r1, r4
+!   destroyed:  r0, r4
 
 puthex8:
 	ldb	rl0, rl4 
@@ -82,13 +82,13 @@ puthex8:
 !   Print a 16bit value in hex
 !
 !   input:      r4 --- value   
-!   destroyed:  r0, r1, r4, r5
+!   destroyed:  r0, r1, r4
 
 puthex16:
-	ld	r5, r4
+	ld	r1, r4
 	ldb	rl4, rh4
 	call	puthex8
-	ldb	rl4, rl5
+	ldb	rl4, rl1
 	jr	puthex8
 
 !------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ puthex16:
 !
 !   input:      rr4 --- buffer address
 !   return:     rr4 --- address of zero terminated string
-!   destroyed:  r0, r1
+!   destroyed:  r0
 
 gets:
 	pushl	@rr14, rr4
@@ -216,7 +216,7 @@ strhex8:
 !   return:     r0  --- value
 !               CF  --- error 
 !               rr4 --- next address 
-!   destroyed:  r1
+!   destroyed:  r0, r1
 
 strhex16:
 	call	strhex8

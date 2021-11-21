@@ -27,8 +27,8 @@
 	call	initscc
 	lda	rr4, bootmsg 
 	call	puts
-	clr	r0
-	ld	r1, r0
+	clr	r1
+	ld	r0, #0x8000
 	ldl	dumpaddr, rr0
 	ldl	setaddr, rr0
 	ldl	goaddr, rr0

@@ -31,16 +31,13 @@ initscc:
 !   output 1 byte to the PORT A 
 !
 !   input:      rl0 --- Ascii code
-!   destroyed:  r0, r1 
+!   destroyed:  r0
 
 putc:
-	ld	r1, #SCCAC
-1:
-	inb	rh0, @r1
+	inb	rh0, #SCCAC
 	andb	rh0, #0x04
-	jr	z, 1b 
-	ld	r1, #SCCAD
-	outb	@r1, rl0
+	jr	z, putc
+	outb	#SCCAD, rl0
 	ret
 
 !------------------------------------------------------------------------------
@@ -48,16 +45,13 @@ putc:
 !   input 1 byte from the PORT A
 !
 !   return:     rl0 --- read data
-!   destroyed:  r0, r1
+!   destroyed:  r0
 
 getc:
-	ld	r1, #SCCAC
- 1:  
-	inb	rh0, @r1
+	inb	rh0, #SCCAC
 	andb	rh0, #0x01
-	jr	z, 1b 
-	ld	r1, #SCCAD
-	inb	rl0, @r1
+	jr	z, getc 
+	inb	rl0, #SCCAD
 	ret
 
 !------------------------------------------------------------------------------
