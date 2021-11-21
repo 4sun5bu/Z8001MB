@@ -15,24 +15,21 @@
 !   Memory set from start address      
 !
 !   input:      rr4 --- options address 
-!   destroyed:  r0, r1, r2, r3, rr4, rr6, rr8, rr10
+!   destroyed:  r0, r1, r2, r3, rr4, rr6
 
 set_cmnd:
-	ldl	rr10, setaddr
+	ldl	rr6, setaddr
 	testb	@rr4
-	jr	z, repeat	! without address
-	call	str_to_addr
+	jr	z, scloop1	! without address
+	call	str_to_saddr
 	jr	c, scmnd_usage
 	ldl	setaddr, rr0
-	ldl	rr10, rr0
-repeat:
-	ldl	rr4, rr10    
-	call	put_real_addr
+	ldl	rr6, rr0
+scloop1:
+	ldl	rr4, rr6
+	call	put_saddr
 	ldb	rl0, #':'
 	call	putc
-	ldl	rr4, rr10
-	call	real_to_seg
-	ldl	rr6, rr4	! rr6 - write addres in segmented address
 	ldb	rl4, @rr6
 	call	puthex8
 	call	putsp
@@ -40,26 +37,28 @@ repeat:
 	call	gets
 	call	skipsp
 	testb	rl0
-	jr	nz, repeat2
-	addl	rr10, #1
-	jr	repeat
-repeat2:	
-	pushl	@rr14, rr4
-	ldl	rr4, rr10
-	call	real_to_seg
-	ldl	rr6, rr4
-	popl	rr4, @rr14
+	jr	nz, scloop2
+	add	r7, #1
+	jr	nc, scloop1
+	incb	rh6, #1
+	orb	rh6, #0x80
+	jr	scloop1
+scloop2:	
 	call	strhex8
-	jr	nc, 1f		! illegal value
-	ldl	setaddr, rr10
+	jr	nc, sc1		! illegal value
+	ldl	setaddr, rr6
 	ret
-1:
+sc1:
 	ldb	@rr6, rl0
-	addl	rr10, #1
+	add	r7, #1
+	jr	nc, sc2
+	incb	rh6, #1
+	orb	rh6, #0x80
+sc2:
 	call	skipsp
 	testb	rl0
-	jr	nz, repeat2
-	jr	repeat
+	jr	nz, scloop2
+	jr	scloop1
 
 scmnd_usage:
 	lda	rr4, usage

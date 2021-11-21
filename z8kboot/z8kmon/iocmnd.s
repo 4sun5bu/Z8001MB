@@ -15,7 +15,7 @@
 !   I/O read and print at a port address
 !
 !   input:      rr4 --- options address 
-!   destroyed:  r0, r1, r2, r3, rr4, rr6, rr8
+!   destroyed:  r0, r1, r2, r3, rr4
 
 ior_cmnd:
 	testb	@rr4

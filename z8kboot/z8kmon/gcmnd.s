@@ -15,17 +15,16 @@
 !   Memory write from start address      
 !
 !   input:      rr4 --- options address
-!   destroyed:  r0, r1, r2, r3, rr4, rr6, rr12
+!   destroyed:  r0, r1, r2, rr4
 
 go_cmnd:
 	testb	@rr4
-	jr	z, 1f			! EOL, without address
-	call	str_to_addr
+	jr	z, gc1			! EOL, without address
+	call	str_to_saddr
 	jr	c, gcmnd_usage
 	ldl	goaddr, rr0
-1:
+gc1:
 	ldl	rr4, goaddr
-	call	real_to_seg
 	call	@rr4
 	ret
 
