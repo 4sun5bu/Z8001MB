@@ -15,39 +15,58 @@
 !   Load intel hex file 
 !
 !   input:      rr4 --- options address 
-!   destroyed:  r0, r1, r2, r3, rr4, rr12
+!   destroyed:  r0, r1, r2, r3, rr4, rr6, rr8
 
 load_cmnd:
-	clr	uaddr
-	clr	segaddr
-	clr	segaddr + 2
- 1:
+	clr	segment
+	clr	segment + 2
+	clr	offset
+	testb	@rr4
+	jr	z, lcloop
+	call	strhex16
+	jp	c, lcmnd_usage
+	ld	offset, r0
+lcloop:
 	lda	rr4, buff
 	call	gets
 	call	ihex_line
-	orb	rl0, rl0
+	testb	rl0
 	ret	mi		! Error
 	ret	z		! ihex end
-	jr	1b
+	jr	lcloop
 
-ihex_line:
-	ldb	rl0, @rr4
-	cpb	rl0, #':'
-	jr	ne, ihex_err
-	inc	r5, #1
+checksum:
+	clrb	rh2
 	call	strhex8
 	jr	c, ihex_err
-	ldb	rl1, rl0	! rl1 --- byte count
-	ldb	rh1, rl0	! rh1 --- CRC
+	addb	rh2, rl0
+	ldb	rl2, rl0
+	addb	rl2, #3
+cs1:
+	call	strhex8
+	jr	c, ihex_err
+	addb	rh2, rl0
+	dbjnz	rl2, cs1
+	call	strhex8		! checksum
+	jr	c, ihex_err
+	negb	rh2
+	cpb	rl0, rh2
+	jr	ne, cs_err
+	ret
+
+ihex_line:
+	cpb	@rr4, #':'
+	jr	ne, ihex_err
+	inc	r5, #1
+	ldl	rr6, rr4
+	call	checksum
+	ldl	rr4, rr6
+	call	strhex8
+	ldb	rl6, rl0	! rl6 --- byte count
 	call	strhex16
-	jr	c, ihex_err
 	ld	r2, r0		! r2  --- data address
-	addb	rh1, rh0
-	addb	rh1, rl0
 	call	strhex8		! rl0 --- record type
-	jr	c, ihex_err
-	addb	rh1, rl0
-	orb	rl0, rl0
+	testb	rl0
 	jr	z, data_rec	! type 0
 	decb	rl0, #1
 	jr	z, data_end	! type 1
@@ -56,83 +75,84 @@ ihex_line:
 	decb	rl0, #1
 	jr	z, seg_saddr	! type 3
 	decb	rl0, #1
-	jr	z, ext_addr	! type 4
+	jr	z, lin_addr	! type 4
 	decb	rl0, #1
-	jr	z, ext_saddr	! type 5 
+	jr	z, lin_saddr	! type 5 
 ihex_err:
-	ldb	rl0, #0xff 
+	lda	rr4, errmsg1
+	jr	ce1
+cs_err:
+	lda	rr4, errmsg2
+ce1:
+	call	puts
+	ldb	rl0, #0xff
 	ret
 
 data_rec:
-	ldl	rr12, rr4	! save rr4 to rr12
-	ld	r5, r2
-	ld	r4, uaddr	! rr4 --- real address  
-	addl	rr4, segaddr	! add segment address      
+	ldl	rr8, rr4	! copy rr4 to rr6
+	ld	r5, offset
+	add	r5, r2		! 
+	clr	r4		! rr4 --- offset + address
+	addl	rr4, segment	! add segment address
 	call	real_to_seg
-	ldl	rr2, rr4	! rr2 --- segmente address 
-	ldl	rr4, rr12	! rr4 --- return rr4 from rr12 
-1:
+	ldl	rr2, rr4	! rr2 --- segmented address 
+	ldl	rr4, rr8	! return rr4 
+dr1:
 	call	strhex8
-	jr	c, ihex_err
 	ldb 	@rr2, rl0
 	add	r3, #1		! increment lower address
-	addb	rh1, rl0
-	dbjnz	rl1, 1b
-	call	strhex8		! rl0 --- CRC
-	jr	c, ihex_err 
-	negb	rh1
-	cpb	rl0, rh1
-	jr	ne, ihex_err 
+	jr	nc, dr2
+	incb	rh2, #1
+	orb	rh2, #0x80
+dr2:
+	dbjnz	rl6, dr1
 	jr	no_err
 
 data_end:
 	xorb	rl0, rl0
 	ret
 
-seg_saddr:
-	call	strhex16
-	jr	c, ihex_err
-	ld	r3, r0
-	clr	r2		! rr2 --- CS
-	call	strhex16
-	jr	c, ihex_err
-	ld	r5, r0
-	clr	r4		! rr4 --- 32bit extended IP
-	addl	rr2, rr2
-	addl	rr2, rr2
-	addl	rr2, rr2
-	addl	rr2, rr2	! rr2 --- 4bit left shifted CS
-	addl	rr4, rr2	! add CS + IP
-	call	real_to_seg
-	ldl	goaddr, rr4 
-	jr	no_err
-
 seg_addr:
 	call	strhex16
-	jr	c, ihex_err
-	ld	r1, r0
+	ld	r1, r0		! rr0 --- DS
 	clr	r0
 	addl	rr0, rr0
 	addl	rr0, rr0
 	addl	rr0, rr0
 	addl	rr0, rr0
-	ldl	segaddr, rr0 
+	ldl	segment, rr0 
 	jr	no_err
 
-ext_addr:
+seg_saddr:
 	call	strhex16
-	jr	c, ihex_err
-	ld	uaddr, r0
+	ld	r3, r0		
+	clr	r2		! rr2 --- CS
+	call	strhex16
+	ld	r5, r0
+	clr	r4		! rr4 --- IP
+	addl	rr2, rr2
+	addl	rr2, rr2
+	addl	rr2, rr2
+	addl	rr2, rr2
+	addl	rr4, rr2	! add CS + IP
+	call	real_to_seg
+	ldl	goaddr, rr4 
 	jr	no_err
 
-ext_saddr:
+lin_addr:
 	call	strhex16
-	jr	c, ihex_err
+	ld	segment, r0
+	clr	segment + 2
+	jr	no_err
+
+lin_saddr:
+	call	strhex16
 	ld	r2, r0
 	call	strhex16
-	jr	c, ihex_err
-	ld	r3, r0
-	ldl	goaddr, rr2
+	ld	r5, r0
+	ld	r4, r2
+	call	real_to_seg
+	ldl	goaddr, rr4
 no_err:
 	ldb	rl0, #0x01
 	ret 
@@ -144,14 +164,20 @@ lcmnd_usage:
 !------------------------------------------------------------------------------
 	sect	.rodata
 usage:
-	.asciz	"Load HEX: l (no options)\r\n"
+	.asciz	"Load HEX: l [xxxx]\r\n"
+
+errmsg1:
+	.asciz	"Illegal input\r\n"
+
+errmsg2:
+	.asciz	"Checksum error\r\n"
 
 !------------------------------------------------------------------------------
 	sect	.bss
 
-segaddr:
+segment:
 	.long	0
-uaddr:
+offset:
 	.word	0
 buff:
 	.space	80

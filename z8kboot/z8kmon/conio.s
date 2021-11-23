@@ -191,7 +191,7 @@ ishex:
 !   return:     rl0 --- value
 !               CF  --- error 
 !               rr4 --- next address 
-!   destroyed:  rh0
+!   destroyed:  r0
 
 strhex8:
 	ldb	rl0, @rr4
@@ -216,7 +216,7 @@ strhex8:
 !   return:     r0  --- value
 !               CF  --- error 
 !               rr4 --- next address 
-!   destroyed:  r0, r1
+!   destroyed:  r0, rl1
 
 strhex16:
 	call	strhex8
