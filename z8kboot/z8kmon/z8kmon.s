@@ -38,45 +38,47 @@
 	call	putsp
 	lda	rr4, linebuff
 	call	gets
-	ldb	rh0, @rr4
+	ldb	rl0, @rr4
+	call	toupper
+	ldb	rh0, rl0
 	inc	r5, #1
 	call	skipsp
-	cpb	rh0, #'d'
+	cpb	rh0, #'D'
 	jr	ne, 2f
 	call	dump_cmnd
 	jr	1b
 2:
-	cpb	rh0, #'s'
+	cpb	rh0, #'D'
 	jr	ne, 3f
 	call	set_cmnd
 	jr	1b
 3:
-	cpb	rh0, #'g'
+	cpb	rh0, #'G'
 	jr	ne, 4f
 	call	go_cmnd
 	jr	1b
 4:
-	cpb	rh0, #'l'
+	cpb	rh0, #'L'
 	jr	ne, 5f
 	call	load_cmnd
 	jr	1b
 5:
-	cpb	rh0, #'i'
+	cpb	rh0, #'I'
 	jr	ne, 6f
 	call	ior_cmnd
 	jr	1b
 6:
-	cpb	rh0, #'o'
+	cpb	rh0, #'O'
 	jr	ne, 7f
 	call	iow_cmnd
 	jr	1b
 7:
-	cpb	rh0, #'z'
+	cpb	rh0, #'Z'
 	jr	ne, 8f
 	call	z_cmnd
 
 8:
-	cpb	rh0, #'h'
+	cpb	rh0, #'H'
 	jr	ne, err_cmnd
 	call	dcmnd_usage
 	call	scmnd_usage
@@ -87,9 +89,9 @@
 	call	zcmnd_usage
 	jr	1b
 
-err_cmnd:
 	testb	linebuff
 	jr	z, 1b
+err_cmnd:
 	lda	rr4, errmsg
 	call	puts
 	lda	rr4, linebuff

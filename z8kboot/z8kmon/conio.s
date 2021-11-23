@@ -7,7 +7,8 @@
 
 	.global	puts, putln, putsp, puthex8, puthex16
 	.global	gets, skipsp, ishex, strhex8, strhex16
- 
+	.global	toupper
+
 	sect	.text
 	segm
 
@@ -160,26 +161,20 @@ skipsp:
 
 ishex:
 	cpb	rl0, #'0'
-	jr	lt, 3f
+	jr	lt, 2f
 	cpb	rl0, #'9'
 	jr	gt, 1f
 	subb	rl0, #'0' 
 	ret
 1:
+	call	toupper
 	cpb	rl0, #'A'
-	jr	lt, 3f
+	jr	lt, 2f
 	cpb	rl0, #'F'
 	jr	gt, 2f
 	subb	rl0, #('A' - 0x0a) 
 	ret
-2:
-	cpb	rl0, #'a'
-	jr	lt, 3f
-	cpb	rl0, #'f'
-	jr	gt, 3f
-	subb	rl0, #('a' - 0x0a) 
-	ret
-3:  
+2:  
 	setflg	c 
 	ret
 
@@ -225,3 +220,20 @@ strhex16:
 	call	strhex8
 	ldb	rh0, rl1
 	ret
+
+!------------------------------------------------------------------------------
+! toupper
+!   Convert lowercase letter to uppercase
+! 
+!   input:      rl0 --- ascii
+!   output:     rl0 --- converted ascii
+!   destroyed:
+
+toupper:
+	cpb	rl0, #'a'
+	ret	lt
+	cpb	rl0, #'z'
+	ret	gt
+	subb	rl0, #0x20
+	ret
+
