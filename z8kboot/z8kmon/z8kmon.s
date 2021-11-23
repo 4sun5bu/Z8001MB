@@ -99,7 +99,7 @@ cmnd_tbl:
 tbl_end:
 
 bootmsg:
-	.asciz	"\033[2J\033[0;0HZ8001 Machine Code Monitor Ver.0.1.3\r\n"
+	.asciz	"\033[2J\033[0;0HZ8001 Machine Code Monitor Ver.0.2.0\r\n"
 errmsg:
 	.asciz	"??? "
 
