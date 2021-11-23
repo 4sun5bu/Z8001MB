@@ -72,8 +72,16 @@ ocmnd_usage:
 
 !------------------------------------------------------------------------------
 	sect	.rodata
+
 i_usage:
 	.asciz	"Input\t: i xxxx\r\n"
 o_usage:
 	.asciz	"Output\t: o xxxx\r\n"
-	
+
+!------------------------------------------------------------------------------
+	sect	.bss
+	.global	ioaddr
+
+ioaddr:
+	.word	0
+

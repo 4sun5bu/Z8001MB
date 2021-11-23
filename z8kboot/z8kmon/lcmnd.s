@@ -116,10 +116,7 @@ seg_addr:
 	call	strhex16
 	ld	r1, r0		! rr0 --- DS
 	clr	r0
-	addl	rr0, rr0
-	addl	rr0, rr0
-	addl	rr0, rr0
-	addl	rr0, rr0
+	slll	rr0, #4
 	ldl	segment, rr0 
 	jr	no_err
 
@@ -130,10 +127,7 @@ seg_saddr:
 	call	strhex16
 	ld	r5, r0
 	clr	r4		! rr4 --- IP
-	addl	rr2, rr2
-	addl	rr2, rr2
-	addl	rr2, rr2
-	addl	rr2, rr2
+	slll	rr2, #4
 	addl	rr4, rr2	! add CS + IP
 	call	linr2seg
 	ldl	goaddr, rr4 

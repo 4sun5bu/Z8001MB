@@ -69,4 +69,10 @@ scmnd_usage:
 usage:
 	.asciz 	"Set\t: s [xxxxxx]\r\n"
 
+!------------------------------------------------------------------------------
+	sect	.bss
+	.global	setaddr
+
+setaddr:
+	.long	0
 

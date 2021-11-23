@@ -37,3 +37,10 @@ gcmnd_usage:
 usage:
 	.asciz 	"Go\t: g [xxxxxx]\r\n"
 
+!------------------------------------------------------------------------------
+	sect	.bss
+	.global	goaddr
+
+goaddr:
+	.long	0
+

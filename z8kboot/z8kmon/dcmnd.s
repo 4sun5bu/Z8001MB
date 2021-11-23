@@ -155,3 +155,10 @@ header:
 usage:
 	.asciz	"Dump\t: d [xxxxxx] [yyyyyy]\r\n"
 
+!------------------------------------------------------------------------------
+	sect	.bss
+	.global	dumpaddr
+
+dumpaddr:
+	.long	0
+

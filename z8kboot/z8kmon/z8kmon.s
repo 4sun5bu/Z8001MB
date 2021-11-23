@@ -104,17 +104,10 @@ bootmsg:
 	.asciz	"\033[2J\033[0;0HZ8001 Machine Code Monitor Ver.0.1.3\r\n"
 errmsg:
 	.asciz	"??? "
+
 !------------------------------------------------------------------------------
 	sect	.bss
-	.global	dumpaddr, setaddr, goaddr, ioaddr, linebuff
+	.global	linebuff
 
-dumpaddr:
-	.long	0
-setaddr:
-	.long	0
-goaddr:
-	.long	0
-ioaddr:
-	.word	0
 linebuff:  
 	.space  80
