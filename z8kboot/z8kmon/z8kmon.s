@@ -32,54 +32,36 @@
 	ldl	dumpaddr, rr0
 	ldl	setaddr, rr0
 	ldl	goaddr, rr0
-1:
+loop:
 	ldb	rl0, #'>'
 	call	putc
 	call	putsp
 	lda	rr4, linebuff
 	call	gets
+	call	skipsp
 	ldb	rl0, @rr4
+	testb	rl0
+	jr	z, loop
 	call	toupper
 	ldb	rh0, rl0
 	inc	r5, #1
 	call	skipsp
-	cpb	rh0, #'D'
-	jr	ne, 2f
-	call	dump_cmnd
-	jr	1b
-2:
-	cpb	rh0, #'D'
-	jr	ne, 3f
-	call	set_cmnd
-	jr	1b
-3:
-	cpb	rh0, #'G'
-	jr	ne, 4f
-	call	go_cmnd
-	jr	1b
-4:
-	cpb	rh0, #'L'
-	jr	ne, 5f
-	call	load_cmnd
-	jr	1b
-5:
-	cpb	rh0, #'I'
-	jr	ne, 6f
-	call	ior_cmnd
-	jr	1b
-6:
-	cpb	rh0, #'O'
-	jr	ne, 7f
-	call	iow_cmnd
-	jr	1b
-7:
-	cpb	rh0, #'Z'
-	jr	ne, 8f
-	call	z_cmnd
-
-8:
+	ldb	rl0, #((tbl_end - cmnd_tbl) / 6)
+	lda	rr2, cmnd_tbl
+lp1:	
+	cpb	rh0, @rr2
+	jr	eq, lp2
+	inc	r3, #6
+	dbjnz	rl0, lp1
+	jr	lp3
+lp2:
+	inc	r3, #2
+	ldl	rr2, @rr2
+	call	@rr2
+	jr	loop
+lp3:
 	cpb	rh0, #'H'
-	jr	ne, err_cmnd
+	jr	ne, cmnderr
 	call	dcmnd_usage
 	call	scmnd_usage
 	call	gcmnd_usage
@@ -87,20 +69,34 @@
 	call	icmnd_usage
 	call	ocmnd_usage
 	call	zcmnd_usage
-	jr	1b
-
-	testb	linebuff
-	jr	z, 1b
-err_cmnd:
+	jr	loop
+cmnderr:	
 	lda	rr4, errmsg
 	call	puts
 	lda	rr4, linebuff
 	call	puts
 	call	putln
-	jr	1b
+	jr	loop
 
 !------------------------------------------------------------------------------
 	sect .rodata
+
+cmnd_tbl:
+	.byte	'D', ' '
+	.long	dump_cmnd
+	.byte	'S', ' '
+	.long	set_cmnd
+	.byte	'L', ' '
+	.long	load_cmnd
+	.byte	'G', ' '
+	.long	go_cmnd
+	.byte	'Z', ' '
+	.long	z_cmnd
+	.byte	'I', ' '
+	.long	ior_cmnd
+	.byte	'O', ' '
+	.long	iow_cmnd
+tbl_end:
 
 bootmsg:
 	.asciz	"\033[2J\033[0;0HZ8001 Machine Code Monitor Ver.0.1.3\r\n"

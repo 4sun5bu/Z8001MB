@@ -225,8 +225,8 @@ strhex16:
 ! toupper
 !   Convert lowercase letter to uppercase
 ! 
-!   input:      rl0 --- ascii
-!   output:     rl0 --- converted ascii
+!   input:      rl0 --- ascii code
+!   output:     rl0 --- converted ascii code
 !   destroyed:
 
 toupper:
