@@ -21,7 +21,7 @@ set_cmnd:
 	ldl	rr6, setaddr
 	testb	@rr4
 	jr	z, scloop1	! without address
-	call	str_to_saddr
+	call	str2saddr
 	jr	c, scmnd_usage
 	ldl	setaddr, rr0
 	ldl	rr6, rr0

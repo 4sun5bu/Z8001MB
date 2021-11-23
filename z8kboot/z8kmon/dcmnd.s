@@ -20,13 +20,13 @@
 dump_cmnd:
 	testb	@rr4
 	jr	z, dc1			! EOL
-	call	str_to_saddr
+	call	str2saddr
 	jr	c, dcmnd_usage		! illegal start address
 	ldl	dumpaddr, rr0
 	call	skipsp			! end address    
 	testb	@rr4
 	jr	z, dc1			! only start address
-	call	str_to_saddr
+	call	str2saddr
 	jr	c, dcmnd_usage		! illegal end address
 	ldl	rr6, rr0
 	jr	dc2

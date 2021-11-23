@@ -20,7 +20,7 @@
 go_cmnd:
 	testb	@rr4
 	jr	z, gc1			! EOL, without address
-	call	str_to_saddr
+	call	str2saddr
 	jr	c, gcmnd_usage
 	ldl	goaddr, rr0
 gc1:

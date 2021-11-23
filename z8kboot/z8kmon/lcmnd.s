@@ -75,9 +75,9 @@ ihex_line:
 	decb	rl0, #1
 	jr	z, seg_saddr	! type 3
 	decb	rl0, #1
-	jr	z, lin_addr	! type 4
+	jr	z, linr_addr	! type 4
 	decb	rl0, #1
-	jr	z, lin_saddr	! type 5 
+	jr	z, linr_saddr	! type 5 
 ihex_err:
 	lda	rr4, errmsg1
 	jr	ce1
@@ -94,7 +94,7 @@ data_rec:
 	add	r5, r2		! 
 	clr	r4		! rr4 --- offset + address
 	addl	rr4, segment	! add segment address
-	call	real_to_seg
+	call	linr2seg
 	ldl	rr2, rr4	! rr2 --- segmented address 
 	ldl	rr4, rr8	! return rr4 
 dr1:
@@ -135,23 +135,23 @@ seg_saddr:
 	addl	rr2, rr2
 	addl	rr2, rr2
 	addl	rr4, rr2	! add CS + IP
-	call	real_to_seg
+	call	linr2seg
 	ldl	goaddr, rr4 
 	jr	no_err
 
-lin_addr:
+linr_addr:
 	call	strhex16
 	ld	segment, r0
 	clr	segment + 2
 	jr	no_err
 
-lin_saddr:
+linr_saddr:
 	call	strhex16
 	ld	r2, r0
 	call	strhex16
 	ld	r5, r0
 	ld	r4, r2
-	call	real_to_seg
+	call	linr2seg
 	ldl	goaddr, rr4
 no_err:
 	ldb	rl0, #0x01
