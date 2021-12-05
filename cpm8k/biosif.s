@@ -41,6 +41,8 @@
 	.extern ccp		! Command Processor
 	.extern trapinit	! trap startup
 	.extern flush
+	.extern scc_init
+	.extern disk_init
 	.extern _psap, _sysseg, _sysstk
 
 ! ****************************************************
@@ -72,7 +74,7 @@
 ! ****************************************************
 
 bios:
-	! segmented mode.
+	! segmented mode
 	! Get system (PC) segment into r4
 	di	vi, nvi
 	calr	kludge		! get PC segment on stack
@@ -93,7 +95,13 @@ kludge:
 	
 	call	trapinit	! set up traps, then enable interrupts
 	ei	vi, nvi
-	
+
+	call	scc_init	! set up serial port and prrint a message
+	lda	r4, bootmsg
+	call	puts
+
+	call	disk_init	! set up disk drive
+
 	call	biosinit	! set up C part of Bios
 	jp	ccp		! Turn control over to command processor
 
@@ -111,3 +119,9 @@ _wboot:
 	call	biosinit
 	ldl	rr14, _sysstk
 	jp	ccp
+
+!------------------------------------------------------------------------------
+	sect	.rodata
+bootmsg:
+	.asciz	"\r\nCP/M-8000 BIOS ver.0.11" 
+

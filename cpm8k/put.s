@@ -3,7 +3,7 @@
 !  Subroutines for console out
 !
 
-	.global	putln, putsp, puthex8, puthex16
+	.global	putln, putsp, puts, puthex8, puthex16
 	
 	.extern	scc_out
  
@@ -12,23 +12,36 @@
 
 !------------------------------------------------------------------------------
 ! putln 
-!   send CR and LF
+!   print CR and LF
 !   destroyed:  rl0, r1, rl5 
 
 putln:
-	ldb	rl5, #'\n'
-	call	scc_out
 	ldb	rl5, #'\r'
+	call	scc_out
+	ldb	rl5, #'\n'
 	jp	scc_out
 
 !------------------------------------------------------------------------------
 ! putsp 
-!   send ' '
+!   print ' '
 !   destroyed:  rl0, r1, rl5 
 
 putsp:
 	ldb	rl5, #' '
 	jp	scc_out
+
+!------------------------------------------------------------------------------
+! puts 
+!   print a zero terminated string
+!   destroyed:  rl0, r1, rl5 
+
+puts:
+	ldb	rl5, @r4
+	testb	rl5
+	ret	z
+	call	scc_out
+	inc	r4, #1
+	jr	puts
 
 !------------------------------------------------------------------------------
 ! puthex4

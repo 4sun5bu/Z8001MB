@@ -9,7 +9,7 @@
 	
 	.global	func8, func9, func10, func11, func12
 	.global	func13, func14, func16, func21, flush
-	.global	secbvalid, secbdirty
+	.global	secbLBA, secbvalid, secbdirty
 
 	.include "biosdef.s"
 	
@@ -26,7 +26,7 @@ func8:
 
 !------------------------------------------------------------------------------
 ! func9
-!   Select Disk Drive 		TODO: Implement checking r7 
+!   Select Disk Drive	
 
 func9:
 	cp	r5, #MAXDSK
@@ -74,7 +74,7 @@ func13:
 	cpl	rr2, secbLBA
 	jr	ne, 1f
 	testb	secbvalid
-	jr	z, 2f
+	jr	nz, 2f
 1:
 	pushl	@r15, rr2	! read the sector into the buffer
 	call	flush
@@ -108,7 +108,7 @@ func14:
 	cpl	rr2, secbLBA
 	jr	ne, 1f
 	testb	secbvalid
-	jr	z, 2f
+	jr	nz, 2f
 1:
 	pushl	@r15, rr2	! read the sector into the buffer
 	call	flush
@@ -240,10 +240,10 @@ dpb1:
 ! Disk parameter header table
 
 dphtbl:
-	.word	0, 0, 0, 0, dirbuf, dpb0, 0, alv0
-	.word	0, 0, 0, 0, dirbuf, dpb1, 0, alv1
-	.word	0, 0, 0, 0, dirbuf, dpb1, 0, alv2
-	.word	0, 0, 0, 0, dirbuf, dpb1, 0, alv3
+	.word	0, 0, 0, 0, dirbuf, dpb0, csv0, alv0
+	.word	0, 0, 0, 0, dirbuf, dpb0, csv1, alv1
+	.word	0, 0, 0, 0, dirbuf, dpb0, csv2, alv2
+	.word	0, 0, 0, 0, dirbuf, dpb0, csv3, alv3
 
 !------------------------------------------------------------------------------
 	sect .bss

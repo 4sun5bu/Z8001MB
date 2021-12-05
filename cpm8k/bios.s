@@ -6,7 +6,7 @@
 !  Copyright (c) 2020, 4sun5bu
 !------------------------------------------------------------------------------
 
-	.extern	sysinit initscc, disk_init
+	.extern	sysinit initscc, disk_init, puts
 	.extern	func0, func1, func2, func3, func4 
 	.extern	func5, func6, func7, func8, func9
 	.extern	func10, func11, func12, func13, func14 
@@ -24,8 +24,8 @@
 	sect .text
 
 biosinit:
-	call	scc_init
-	call	disk_init
+	clr	secbLBA
+	clr	secbLBA + 2
 	clrb	secbvalid
 	clrb	secbdirty
 	ret
@@ -74,8 +74,6 @@ biostbl:
 	sect	.data
 iobyte:
 	.word	0
-
-
 
 !------------------------------------------------------------------------------
 
