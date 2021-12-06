@@ -28,16 +28,13 @@ scc_init:
 ! scc_out 
 !   output 1 byte to the serial port
 !   input:      r5 --- Ascii code
-!   destroyed:  rl0, r1 
+!   destroyed:  rl0
 
 scc_out:
-    ld      r1, #SCCAC
-1:  
-    inb     rl0, @r1
+    inb     rl0, #SCCAC
     andb    rl0, #0x04
-    jr      z, 1b 
-    ld      r1, #SCCAD
-    outb    @r1, rl5
+    jr      z, scc_out
+    outb    #SCCAD, rl5
     ret
 
 !------------------------------------------------------------------------------
@@ -47,14 +44,11 @@ scc_out:
 !   destroyed:  r0, r1
 
 scc_in:
-    ld      r1, #SCCAC
-1:  
-    inb     rl0, @r1
+    inb     rl0, #SCCAC
     andb    rl0, #0x01
-    jr      z, 1b 
-    ld      r1, #SCCAD
-    xor     r7, r7
-    inb     rl7, @r1
+    jr      z, scc_in 
+    clr     r7
+    inb     rl7, #SCCAD 
     ret
 
 !------------------------------------------------------------------------------
@@ -63,9 +57,8 @@ scc_in:
 !   destroyed:  r1, r10
 
 scc_status:
-    ld      r1, #SCCAC
-    inb     rl0, @r1
-    ldk     r7, #0x00
+    inb     rl0, #SCCAC
+    clr     r7
     andb    rl0, #0x01
     ret     z
     com     r7

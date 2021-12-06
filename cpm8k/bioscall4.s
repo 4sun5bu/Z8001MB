@@ -74,13 +74,13 @@ memtbl:
 	.if ID_SPLIT == 1
 	.word	0x05
 	.long	0x0A000000		! Region 1
-	.long	0x00010000
+	.long	0x00010000		!  merged I and D
 	.long	0x08000000		! Region 2
-	.long	0x00010000
+	.long	0x00010000		!  separated I
 	.long	0x08000000		! Region 3
-	.long	0x00010000
+	.long	0x00010000		!  separeted D
 	.long	0x0B000000		! Region 4
-	.long	0x00010000
+	.long	0x00010000		!  accessing I as D
 	.long	0x09000000		! for DDT?
 	.long	0x00010000	
 	
