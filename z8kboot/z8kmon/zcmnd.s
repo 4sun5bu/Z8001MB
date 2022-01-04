@@ -22,11 +22,12 @@ z_cmnd:
 	call	puts
 	call	ide_init
 	ldl	rr2, #0
-	ldl	rr4, #0x03000000
+	ldl	rr4, #0x83000000
 1:
 	pushl	@rr14, rr4
 	pushl	@rr14, rr2
 	call	ide_read
+	jr	c, zcmnd_err
 	ldb	rl0, #'*'
 	call	putc
 	popl	rr2, @rr14
@@ -37,6 +38,12 @@ z_cmnd:
 	jr	nz, 1b
 	jp	0x83000000
 
+zcmnd_err:
+	popl	rr2, @rr14
+	popl	rr4, @rr14
+	lda	rr4, errmsg
+	jp	puts
+
 zcmnd_usage:
 	lda	rr4, usage
 	jp	puts
@@ -46,6 +53,8 @@ zcmnd_usage:
 
 zmsg1:
 	.string "Load from CF \0"
+errmsg:
+	.string	"Boot error\r\n\0"
 
 usage:
 	.asciz	"Z boot\t: z (no options)\r\n"
