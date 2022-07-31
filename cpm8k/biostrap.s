@@ -274,8 +274,8 @@ clrtraps:
 	ret
 
 
-fp_epu:
-        ret
+!fp_epu:
+!        ret
 /*
 dbgbc:  
 	! Segmented mode

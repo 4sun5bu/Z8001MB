@@ -14,7 +14,7 @@ objs = biosboot.o biosif.o biostrap.o biosmem.o\
 all: cpm8k.bin
 
 cpm8k.bin: $(objs) biosdef.s cpmsys.o libcpm.a cpmsys.x
-	$(LD) -mz8002 -T cpmsys.x -L./ -o cpm8k $(objs) cpmsys.o -lcpm
+	$(LD) -mz8002 -T cpmsys.x -L./ -o cpm8k $(objs) cpmsys.o fpe.o fpedep.o -lcpm
 	$(OBJCOPY) -S -O binary cpm8k cpm8k.bin
 
 .s.o:
