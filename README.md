@@ -20,3 +20,6 @@ The original CP/M-8000 BIOS was written in C language. But it makes hard to impl
 
 **Running CP/M-8000**    
 ![cpm8k](./cpm8k/cpm8k-1.png)
+
+## NEW
+**01 Aug 2022 : FPU emulation is linked to CP/M-8000 BIOS**
