@@ -11,7 +11,7 @@ This directory includes CP/M-8000 BIOS source codes for the Z8001MB board. You c
 
 ## Build and make a boot disk image
 * Type **make** in the cpm8k directory.
-* Copy CP/M commands from **CP/M-8000 1.1** into diska/b/c/d directories.
+* Copy CP/M commands from **CP/M-8000 1.1** into diska/b/c/d directories, or unzip **devpack.zip** in diska.
 * Type **make dskimg**
 * Write **cpm8k.bin** to the boot drive with dd command.
  
@@ -25,5 +25,5 @@ $ sudo dd if=cpm8k.bin of=/dev/sdx
 Executing **dd** with care. Do not set a wrong disk drive for **"of"**.    
 
 ## License
-cpmsys.rel, cpmsys.o and libcpm.a - licensed by Lineo,Inc. See "The Unofficial CP/M Web Site"   
+cpmsys.rel, cpmsys.o, libcpm.a and devpack.zip - These files from Digital Resarch. See "The Unofficial CP/M Web Site"   
 others - MIT License
