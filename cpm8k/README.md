@@ -2,27 +2,28 @@
 
 ![CPM8k](./cpm8k-1.png)
 
-This directory includes CP/M-8000 BIOS source codes for the Z8001MB board. You can build your own CP/M-8000 system by cross assembling on Linux and Windows. 
+This directory includes CP/M-8000 BIOS source codes for the Z8001MB and COFF-converted object files releaced by Digital Research. You can build your own CP/M-8000 system by cross assembling on Linux and Windows. To build CP/M-8000 system you need GNU tools and set up them before.  
 
 ## Preparation
 * Download GNU Binutils and buid it with **--target==z8k-coff** option. I use GNU Binutils 2.34.
-* Download **CP/M-8000 1.1** in [Digital Research Source Code](http://www.cpm.z80.de/source.html) and unzip it. There are 4 disk images containing CP/M commands in the ZIP file.   
+* Download **CP/M-8000 1.1** in [Digital Research Source Code](http://www.cpm.z80.de/source.html) and unzip it. There are 4 disk images containing CP/M commands in the ZIP file. You can skip this step if .    
 * Install cpmtools package, and append the **diskdefs** in the cpm8k directory to **/etc/cpmtools/diskdefs**. 
 
 ## Build and make a boot disk image
 * Type **make** in the cpm8k directory.
-* Copy CP/M commands from **CP/M-8000 1.1** into diska/b/c/d directories, or unzip **devpack.zip** in diska.
+* Unzip **devpack.zip** in /diska, and copy files you want to store from **CP/M-8000 1.1** into diska/b/c/d directories.
 * Type **make dskimg**
-* Write **cpm8k.bin** to the boot drive with dd command.
+* Write **disk.img** to a memeory device with **dd** command.
  
 ```
 In the cpm8k directory
 $ make 
+$ unzip -d diska diska/devpac.zip
 $ make diskimg
-$ sudo dd if=cpm8k.bin of=/dev/sdx 
+$ sudo dd if=disk.img.bin of=/dev/sd? 
 ``` 
-**"sdx"** is your drive to write the boot disk image.  
-Executing **dd** with care. Do not set a wrong disk drive for **"of"**.    
+**"sd?"** is your device to write the boot disk image.  
+Executing **dd** with care. Do not set a wrong device for **"of"**.    
 
 ## License
 cpmsys.rel, cpmsys.o, libcpm.a and devpack.zip - These files from Digital Resarch. See "The Unofficial CP/M Web Site"   
