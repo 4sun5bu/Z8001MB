@@ -6,14 +6,14 @@ This directory includes CP/M-8000 BIOS source codes for the Z8001MB and COFF-con
 
 ## Preparation
 * Download GNU Binutils and buid it with **--target==z8k-coff** option. I use GNU Binutils 2.34.
-* Download **CP/M-8000 1.1** in [Digital Research Source Code](http://www.cpm.z80.de/source.html) and unzip it. There are 4 disk images containing CP/M commands in the ZIP file. You can skip this step if .    
+* Download **CP/M-8000 1.1** in [Digital Research Source Code](http://www.cpm.z80.de/source.html) and unzip it. There are 4 disk images containing CP/M commands in the ZIP file. You can skip this step if you don't need.
 * Install cpmtools package, and append the **diskdefs** in the cpm8k directory to **/etc/cpmtools/diskdefs**. 
 
 ## Build and make a boot disk image
 * Type **make** in the cpm8k directory.
 * Unzip **devpack.zip** in /diska, and copy files you want to store from **CP/M-8000 1.1** into diska/b/c/d directories.
 * Type **make dskimg**
-* Write **disk.img** to a memeory device with **dd** command.
+* Write **disk.img** to a boot device with **dd** command.
  
 ```
 In the cpm8k directory
@@ -24,6 +24,8 @@ $ sudo dd if=disk.img.bin of=/dev/sd?
 ``` 
 **"sd?"** is your device to write the boot disk image.  
 Executing **dd** with care. Do not set a wrong device for **"of"**.    
+
+Devpack.zip is no longer need after booting, so erase it on the CP/M console.    
 
 ## License
 cpmsys.rel, cpmsys.o, libcpm.a and devpack.zip - These files from Digital Resarch. See "The Unofficial CP/M Web Site"   
