@@ -6,3 +6,4 @@ cpm8k
 
 !fpe.o
 !fpedep.o
+!startup.o

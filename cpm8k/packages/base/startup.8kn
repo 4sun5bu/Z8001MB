@@ -1,0 +1,283 @@
+;*******************************************************
+;*
+;*                    S T A R T U P
+;*                    -------------
+;*  Copyright 1984, Digital Research Inc. 
+;*  All rights reserved
+;*
+;*      C runtime startup for CP/M-Z8K (tm) 
+;*
+;* 	Modified by rfw	03/20/84 save new break address
+;*      Bill Gord - 7 Sept 84 - add word to __con segment
+;*				to prevent data allocation 
+;*				at word 0 in split I/D
+;*			      - __sovf properly puts message
+;*				pointer in RR6
+;*	Bill Gord  15 Nov 84  - Add m.init entry to keep 
+;*				REAL compilers happy
+;*			      - Rearranged startup/exit code
+;*			      - stack overflow test in __BDOS
+;*	2 Dec 84 - BG	- now that ld8k prevents use of word zero
+;*				in splid I/D, remove use of __con
+;*	19 Dec 84  BG	- properly initialize the USER, FFLAGS, and
+;*				F0...F7 registers in Z8070 (or its
+;*				emulator)
+;*
+;*******************************************************
+
+;*******************************************************
+;*
+;*This module contains the following entry points:
+;*
+;*m.init:
+;*__start:
+;*	The low-level runtime startup routine for C
+;*	programs.  Clears BSS area, sets up global
+;*	pointers to basepage (__base) and end of BSS
+;*	(__break).  Passes start address and length of
+;*	command line tail to __main (see xmain.c) for
+;*	tokenizing.  __main calls the user's main
+;*	function.  On return from __main, __exit (see
+;*	below) is entered.
+;*
+;*__exit:
+;*	Default return address for programs.  The
+;*	address of __exit (0x0002) is pushed onto the
+;*	user stack before each user program is run.
+;*	__exit performs a warm boot.  Most user
+;*	programs will end with an explicit warm boot or
+;*	with a call to exit(), which in turn does a
+;*	call to _exit() (true name __exit.) after
+;*	cleaning up the Standard I/O system.
+;*
+;*_brk:
+;*	C definition:	BYTE *brk(addr)
+;*			BYTE *addr;
+;*
+;*	Change the position of the end of BSS for the
+;*	user program.  Checks only that the new value
+;*	does not come too close to the stack.  Returns
+;*	-1 if it does, 0 if it is OK.
+;*
+;*___BDOS:
+;*	C definition:	UWORD __BDOS(number, argument)
+;*			UWORD number;
+;*			LONG argument;
+;*
+;*	C interface to BDOS.  Calls BDOS function
+;*	<number> with argument <argument>.  Returns
+;*	BDOS return value.
+;*
+;* In addition, a number of global variables are
+;* defined.  See below for details.
+;*
+;***************************************************
+
+;***************************************************
+;*
+;* Globals (can be used by other modules)
+;*
+;***************************************************
+
+	.global __start		; Runtime startup
+	.global m.init
+	.global	__exit		; Default return
+	.global _brk		; brk function
+	.global	___BDOS		; BDOS entry point
+
+	.global	__break		; Initial bss end
+	.global	___cpmrv	; BDOS return value
+	.global __base		; Pointer to basepage
+	.global __sovf		; Stack Overflow
+	.global _rw_
+
+	.global	___pname	; (Fake) program name
+	.global	___tname	; Console name
+	.global ___lname	; List device name
+	.global	___xeof		; End of file char
+
+;***************************************************
+;*
+;* Externals (defined in other modules)
+;*
+;***************************************************
+
+	.global __main		; Main C function
+
+;***************************************************
+;*
+;* Definitions
+;*
+;***************************************************
+
+				; Offsets in basepage
+lbss	.equ	24		; Pointer to bss start
+bsslen	.equ	28		; Bss length
+command	.equ	128		; Command tail
+
+BDOS_SC	.equ	2		; BDOS system call
+EXIT	.equ	0		; BDOS exit request
+PRINT	.equ	9		; BDOS print request
+
+safety	.equ	0100h		; Stack growth allowance
+
+;***************************************************
+;*
+;* C Stack frame equates
+;*
+;*	A C stack frame consists of the PC on top,
+;*	followed by the arguments, leftmost first.
+;*
+;*	The caller adjusts the stack on return.
+;*	Returned value is in r7 (int) or rr6 (long)
+;*
+;****************************************************
+
+PCSIZE		.equ	2	;PC size non-segmented
+INTSIZE		.equ	2	;INT data type size
+LONGSIZE 	.equ	4	;LONG data type size
+
+ARG1	.equ	PCSIZE		;integer arguments
+ARG2	.equ	ARG1+INTSIZE
+
+;***************************************************
+;*
+;* Data area
+;*
+;***************************************************
+
+__data .sect
+
+
+				; Fake program name
+				; (CCP eats real one)
+___pname:	.byte	"C runtime ", 0
+___tname:	.byte	"CON:", 0	; Console name
+___lname:	.byte	"LST:", 0	; List device
+___xeof:	.byte	01ah		; End of file
+ovf:		.byte	"Stack Overflow $", 0 ; Error Mess.
+
+				; Copyright message
+	.byte	"CLEARZ8K V 02.00"
+	.byte	"Copyright(c) 1984, Digital Research Inc."
+	.byte	"XXXX-0000-654321", 0
+
+__bss	.sect
+
+__break:	.block	2	; Initial bss end
+___cpmrv:	.block	2	; BDOS return value
+__base:		.block	2	; Pointer to basepage
+
+__text	.sect
+
+;***************************************************
+;*
+;* __start
+;*
+;***************************************************
+
+m.init:
+__start:
+	ldk	r2,#0		; clear some
+	ldk	r3,#0		; registers
+	call	_rw_		; security reasons
+
+	ld	r2, ARG1(r15)	; Get basepage address 
+	ld	r4, (lbss+2)(r2); Get bss start, length
+	ld	r1, (bsslen+2)(r2)	; (offset only)
+	lda	r6, r1(r4)	; r6 <- end of bss
+	rr	r1, #1		; length <- word count
+	jr	z, xdone	; Empty bss?
+
+xclear:
+	  clr	  @r4		; Clear out bss area
+	  inc	  r4, #2
+	  djnz	  r1, xclear
+
+xdone:
+	ld	__base, r2	; Pointer to basepage
+	ld	__break, r6	; Set up break address
+				; Get cmd line start
+	lda	r4, (command+1)(r2)	; address
+	ldb	rl2, -1(r4)	;  and cmd line length
+	ldb	rh2, #0		; Pad to 16 bits
+	push	@r15, r2	; Stack both as params
+	push	@r15, r4
+	ldk	r14, #0		; Clear frame pointer
+
+	ldk	r0,#0		; initialize Z8070 or fpe
+	ldk	r1,#0
+	fldctl	user,r0		; disable all traps, round to nearest
+	fldctl	fflags,rr0	; nothing interesting has happened yet
+	fldil	f0,rr0		; and zero all the regs
+	fldil	f1,rr0
+	fldil	f2,rr0
+	fldil	f3,rr0
+	fldil	f4,rr0
+	fldil	f5,rr0
+	fldil	f6,rr0
+	fldil	f7,rr0
+	
+	call	__main		; Call main function
+
+__exit:
+	ldk	r5, #EXIT	; User prog returns
+	sc	#BDOS_SC	;   here: warm boot
+
+
+
+;***************************************************
+;*
+;* _brk
+;*
+;***************************************************
+
+_brk:
+	ld	r2, ARG1(r15)	; Pick up new value
+	ld	r7, r2
+	add	r2, #safety	; Safe distance below
+	cp	r2, r15		;  current stack?
+	jr	ult, brkok 	; Go save the new break 
+				; address !! rfw
+	ld 	r7, #0
+	dec	r7, #1		; It's not: return -1
+	ret
+
+brkok:
+	ld	__break, r7	; Squirrel it away for later
+	ldk 	r7, #0 		; make sure ret is setup
+	ret			; Return
+
+;***************************************************
+;*
+;* ___BDOS
+;*
+;***************************************************
+
+___BDOS:
+				; r5 <- request code
+				; rr6 <- parameter
+	ldm	r5, ARG1(r15), #3
+	sc	#BDOS_SC	; Trap into BDOS
+
+	cp	r15, __break	; Check for Stack overflow
+	jr	ult, __sovf
+        ret			; Return value already in r7
+
+__sovf:	ldk 	r5, #PRINT	; Function 9 String Print
+	ldk	r6, #0
+	ld 	r7,ovf		; rr6 ->message
+	sc	#BDOS_SC	; Pass it off
+	jr 	__exit		; exit now
+
+
+	.end
+ion 9 String Print
+	ldk	r6, #0
+	ld	r7,ovf		; rr6 ->message
+	sc	#BDOS_SC	; Pass it off
+	jr 	__exit		; exit now
+
+
+	.end
+
