@@ -1,0 +1,3 @@
+#include "option.h"
+MINIMAL
+

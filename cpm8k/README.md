@@ -11,22 +11,21 @@ This directory includes CP/M-8000 BIOS source codes for the Z8001MB and COFF-con
 
 ## Build and make a boot disk image
 * Type **make** in the cpm8k directory.
-* Unzip **devpack.zip** in /diska, and copy files you want to store from **CP/M-8000 1.1** into diska/b/c/d directories.
+* Chose files in packages/, and copy them into diska/b/c/d directories.
 * Type **make dskimg**
 * Write **disk.img** to a boot device with **dd** command.
  
 ```
 In the cpm8k directory
 $ make 
-$ unzip -d diska diska/devpac.zip
-$ make diskimg
+$ cp packages/base/*.* diska/
+$ make dskmg
 $ sudo dd if=disk.img.bin of=/dev/sd? 
 ``` 
 **"sd?"** is your device to write the boot disk image.  
-Executing **dd** with care. Do not set a wrong device for **"of"**.    
-
-Devpack.zip is no longer need after booting, so erase it on the CP/M console.    
+Execute **dd** with care. Do not set a wrong device for **"of"**.    
+   
 
 ## License
-cpmsys.rel, cpmsys.o, libcpm.a and devpack.zip - These files from Digital Resarch. See "The Unofficial CP/M Web Site"   
+cpmsys.rel, cpmsys.o, libcpm.a and files in packages/base - These files by Digital Resarch. See "The Unofficial CP/M Web Site"   
 others - MIT License
